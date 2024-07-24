@@ -1,0 +1,70 @@
+
+# https://stackoverflow.com/questions/69992161/run-task-in-azure-pipeline-only-if-the-pull-request-is-being-merged
+# to do - try using a template
+
+# trigger: none
+
+trigger:
+ branches:
+  include:
+    - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  # Azure service connection established during pipeline creation
+  serviceConnection: "sc-azure-billing-prd"
+  functionAppName: "vsad-p-billing-alfa"
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+jobs:
+- job: BuildAndDeploy
+  displayName: 'Build and Deploy'
+  # condition: and(eq(variables['Build.SourceBranchName'], 'main'), eq(variables['Build.Reason'], 'IndividualCI'))
+  # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'IndividualCI'))
+  # condition: and(succeeded(), eq(variables['System.PullRequest.SourceBranch'], 'refs/heads/main'))
+  # condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+
+  steps:
+  - checkout: self
+
+  - task: UsePythonVersion@0
+    displayName: "Setting Python version to 3.11 as required by functions"
+    inputs:
+      versionSpec: '3.11'
+      architecture: 'x64'
+
+  - bash: |
+      if [ -f extensions.csproj ]
+      then
+          dotnet build extensions.csproj --output ./bin
+      fi
+      pip install --target="./.python_packages/lib/site-packages" -r ./requirements.txt
+
+  - task: ArchiveFiles@2
+    displayName: "Archive files"
+    inputs:
+      rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
+      includeRootFolder: false
+      archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+      artifactName: 'drop'
+
+  #- task: AzureFunctionApp@2 # Add this at the end of your file
+    #inputs:
+      #azureSubscription: $(serviceConnection)
+      #appType: functionAppLinux # default is functionApp
+      #appName: $(functionAppName)
+      #package: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'  #$(System.ArtifactsDirectory)/**/*.zip
+      #deploymentMethod: 'auto' # 'auto' | 'zipDeploy' | 'runFromPackage'. Required. Deployment method. Default: auto.
+      #Uncomment the next lines to deploy to a deployment slot
+      #Note that deployment slots is not supported for Linux Dynamic SKU
+      #deployToSlotOrASE: true
+      #resourceGroupName: '<Resource Group Name>'
+      #slotName: '<Slot name>'
