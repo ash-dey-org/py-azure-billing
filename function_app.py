@@ -327,6 +327,8 @@ def sendEmail(attachment_csv, attachment_xlsx):
     except Exception as ex:
         print(ex)
 
+'''
+# use this part when running locally & comment function app components at the top
 
 bill_month = from_date_input[-7:]
 csv_file_name = f"azure-bill-{bill_month}.csv"
@@ -334,3 +336,5 @@ xlsx_file_name = f"azure-bill-{bill_month}.xlsx"
 extract_billing_data(headers, query, api_version, csv_file_name)
 process_file(csv_file_name, xlsx_file_name)
 sendEmail(csv_file_name, xlsx_file_name)
+
+'''
