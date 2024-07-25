@@ -138,13 +138,11 @@ query = {
     }
 }
 
-
 # define function app and its scehdule
 app = func.FunctionApp()
 
 @app.function_name(name="MonthlyBillingReport")
-@app.schedule(schedule="0 10 1 * * *",
-# @app.schedule(schedule="0 */10 * * * *",
+@app.schedule(schedule="0 40 * * * *",
               arg_name="MonthlyBillingReport",
               run_on_startup=False)
 def test_function1(MonthlyBillingReport: func.TimerRequest) -> None:
