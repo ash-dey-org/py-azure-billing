@@ -12,7 +12,6 @@
 
 import requests
 import csv
-# import sys
 from datetime import datetime, timedelta
 import calendar
 import os
@@ -32,7 +31,7 @@ import logging
 kv_url = os.environ["kv_url"]
 cert_name = os.environ["cert_name"]
 client_id = os.environ["billing_app_id"]
-tenant_id = os.environ["Tazure_tenant_id"]
+tenant_id = os.environ["azure_tenant_id"]
 api_version = os.environ.get('api_version')
 vendor_subscriptions_env = os.environ.get("vendor_subscriptions")
 vendor_subscriptions = [item.strip().strip('"') for item in vendor_subscriptions_env.split(',')]
@@ -188,7 +187,7 @@ def extract_billing_data(headers, query, api_version, output_file_csv):
                     subscription_name = row[2]
                     management_cost_appox = round(0.0, 2)
                     total_cost = round(cost+management_cost_appox, 2)
-                    tags = {tag.split(":")[0].strip('"'): tag.split(":")[1].strip('"') for tag in row[3]}
+                    tags = {tag.split(":")[0].strip('"'): tag.split(":")[1].strip('"') for tag in row[3] if tag.split(":")[1].strip('"') != "environment"}
                     app = tags.get("app", "")
                     environment = tags.get("environment", "")
                     owner = tags.get("owner", "")
