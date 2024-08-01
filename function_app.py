@@ -143,7 +143,7 @@ app = func.FunctionApp()
 @app.function_name(name="MonthlyBillingReport")
 @app.schedule(schedule="0 40 * * * *",
               arg_name="MonthlyBillingReport",
-              run_on_startup=False)
+              run_on_startup=True)
 def test_function1(MonthlyBillingReport: func.TimerRequest) -> None:
     utc_timestamp = datetime.datetime.utcnow().replace(
         tzinfo=datetime.timezone.utc).isoformat()
