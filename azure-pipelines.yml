@@ -26,7 +26,6 @@ jobs:
   # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI'))
   # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'IndividualCI'))
   # condition: and(succeeded(), eq(variables['System.PullRequest.SourceBranch'], 'refs/heads/main'))
-  # condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
   steps:
