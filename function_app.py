@@ -12,7 +12,8 @@
 
 import requests
 import csv
-from datetime import datetime, timedelta
+# from datetime import datetime, timedelta
+import datetime
 import calendar
 import os
 import base64
@@ -77,7 +78,7 @@ print("This program is going to extract previous month's billing data per RG fro
 # Get the current date
 current_date = datetime.now()
 # Calculate the first and last day of the previous month
-first_day_previous_month = (current_date.replace(day=1) - timedelta(days=1)).replace(day=1)
+first_day_previous_month = (current_date.replace(day=1) - datetime.timedelta(days=1)).replace(day=1)
 last_day_previous_month = first_day_previous_month.replace(day=calendar.monthrange(first_day_previous_month.year, first_day_previous_month.month)[1])
 
 # Format the dates as dd-mm-yyyy
