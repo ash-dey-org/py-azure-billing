@@ -44,6 +44,7 @@ jobs:
       fi
       python -m pip install --upgrade pip
       pip install --target="./.python_packages/lib/site-packages" -r ./requirements.txt
+# pip install --target=".python_packages/lib/site-packages" -r requirements.txt
 
   - task: ArchiveFiles@2
     displayName: "Archive files"
