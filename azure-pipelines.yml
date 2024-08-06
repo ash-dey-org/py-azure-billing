@@ -7,7 +7,7 @@
 trigger:
  branches:
   include:
-    - main
+    - main-do-not-use
 
 pool:
   vmImage: ubuntu-latest
