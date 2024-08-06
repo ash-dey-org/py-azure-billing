@@ -7,7 +7,7 @@
 trigger:
  branches:
   include:
-    - main-do-not-use
+    - main-do-not-use-trying-guthib-action
 
 pool:
   vmImage: ubuntu-latest
