@@ -48,7 +48,7 @@ cert_thumbprint = certificate.properties.x509_thumbprint.hex()
 client = SecretClient(vault_url=kv_url, credential=credential)
 
 # download pem file from key vault
-cert_file = "temp.pem"
+cert_file = "/tmp/temp.pem"
 with open(cert_file, "w") as pem_file:
     pem_file.write(client.get_secret(cert_name).value)
 
@@ -103,8 +103,8 @@ from_datetime = f"{from_date}T00:00:00Z"
 to_datetime = f"{to_date}T23:59:59Z"
 
 bill_month = from_date_input[-7:]
-csv_file_name = f"azure-bill-{bill_month}.csv"
-xlsx_file_name = f"azure-bill-{bill_month}.xlsx"
+csv_file_name = f"/tmp/azure-bill-{bill_month}.csv"
+xlsx_file_name = f"/tmp/azure-bill-{bill_month}.xlsx"
 
 #Requst body
 query = {
