@@ -92,7 +92,7 @@ to_date_input = last_day_previous_month.strftime('%d-%m-%Y')
 
 # Function to convert date from dd-mm-yyyy to yyyy-mm-dd
 def convert_date_format(date_str):
-    return datetime.strptime(date_str, "%d-%m-%Y").strftime("%Y-%m-%d")
+    return datetime.datetime.strptime(date_str, "%d-%m-%Y").strftime("%Y-%m-%d")
 
 # Convert the input dates to the required format
 from_date = convert_date_format(from_date_input)
