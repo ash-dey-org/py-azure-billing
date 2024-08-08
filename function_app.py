@@ -76,7 +76,7 @@ print("This program is going to extract previous month's billing data per RG fro
 ## Set date to previous month
 
 # Get the current date
-current_date = datetime.now()
+current_date = datetime.datetime.now()
 # Calculate the first and last day of the previous month
 first_day_previous_month = (current_date.replace(day=1) - datetime.timedelta(days=1)).replace(day=1)
 last_day_previous_month = first_day_previous_month.replace(day=calendar.monthrange(first_day_previous_month.year, first_day_previous_month.month)[1])
@@ -146,7 +146,7 @@ app = func.FunctionApp()
               arg_name="MonthlyBillingReport",
               run_on_startup=True)
 def main(MonthlyBillingReport: func.TimerRequest) -> None:
-    utc_timestamp = datetime.utcnow().replace(
+    utc_timestamp = datetime.UTC.replace(
         tzinfo=datetime.timezone.utc).isoformat()
     if MonthlyBillingReport.past_due:
         logging.info('The timer is past due!')
