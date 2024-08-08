@@ -59,7 +59,7 @@ cert_credential = CertificateCredential(
     certificate_path=cert_file
 )
 
-os.remove("temp.pem")
+os.remove("/tmp/temp.pem")
 
 access_token = cert_credential.get_token(scope).token
 
