@@ -1,3 +1,7 @@
+# to do
+# run function app 2nd of every month 0 45 5 2 * *
+# include email to Ashv and Prem
+
 # pip install requests
 # pip install azure-identity
 # pip install azure-mgmt-resource
