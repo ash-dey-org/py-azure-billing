@@ -146,8 +146,7 @@ app = func.FunctionApp()
               arg_name="MonthlyBillingReport",
               run_on_startup=True)
 def main(MonthlyBillingReport: func.TimerRequest) -> None:
-    utc_timestamp = datetime.UTC.replace(
-        tzinfo=datetime.timezone.utc).isoformat()
+    utc_timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if MonthlyBillingReport.past_due:
         logging.info('The timer is past due!')
     logging.info('Python timer trigger function ran at %s', utc_timestamp)
