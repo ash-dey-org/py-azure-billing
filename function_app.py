@@ -259,6 +259,9 @@ def sendEmail(attachment_csv, attachment_xlsx):
     with open(attachment_xlsx, "rb") as file:
         file_bytes_b64_excel = base64.b64encode(file.read())
 
+    csv_discard_tmp = attachment_csv[5:]
+    xlsx_discard_tmp = attachment_xlsx[5:]
+
     message = {
         "content": {
             "subject": "Azure Monthly Billing Report",
@@ -282,12 +285,12 @@ def sendEmail(attachment_csv, attachment_xlsx):
         ],
         "attachments": [
             {
-                "name": attachment_csv,
+                "name": csv_discard_tmp,
                 "contentType": "text/csv",
                 "contentInBase64": file_bytes_b64_csv.decode()
             },
             {
-                "name": attachment_xlsx,
+                "name": xlsx_discard_tmp,
                 "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "contentInBase64": file_bytes_b64_excel.decode()
             }
