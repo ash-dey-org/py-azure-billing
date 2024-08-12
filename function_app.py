@@ -1,6 +1,5 @@
 # to do
-# run function app 2nd of every month 0 45 5 2 * *
-# include email to Ashv and Prem
+# include Ashv and Prem in email DL
 
 # pip install requests
 # pip install azure-identity
@@ -146,9 +145,9 @@ query = {
 app = func.FunctionApp()
 
 @app.function_name(name="MonthlyBillingReport")
-@app.schedule(schedule="0 45 5 * * *",
+@app.schedule(schedule="0 45 19 3 * *",
               arg_name="MonthlyBillingReport",
-              run_on_startup=True)
+              run_on_startup=False)
 def main(MonthlyBillingReport: func.TimerRequest) -> None:
     utc_timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if MonthlyBillingReport.past_due:
