@@ -2,8 +2,8 @@
     "BillingApp": {
         "ApiVersion" :
             {
-                "dev":"api-version=2023-09-01",
-                "prd":"api-version=2023-11-01"
+                "dev" : "api-version=2023-09-01",
+                "prd" : "api-version=2023-11-01"
             }
     }
   }
