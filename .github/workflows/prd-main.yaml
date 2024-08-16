@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - ac/**
   # workflow_dispatch:
 
 permissions:
@@ -39,13 +41,6 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         oidc: true
-
-    - name: import app config
-      uses: azure/cli@v2
-      with:
-        azcliversion: latest
-        inlineScript: |
-          az appconfig kv import --name ${{ env.AZURE_APPCONFIG_NAME }} --auth-mode login -s file --path ac_import.json --format json --yes
 
     - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
       uses: actions/setup-python@v5

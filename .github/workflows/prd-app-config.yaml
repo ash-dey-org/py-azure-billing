@@ -1,0 +1,50 @@
+name: Deploy Python project to Azure Function App
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ac/**
+  # workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+# CONFIGURATION
+# For help, go to https://github.com/Azure/Actions
+#
+# 1. Set up the following secrets in your repository:
+#   AZURE_FUNCTIONAPP_PUBLISH_PROFILE
+#
+# 2. Change these variables for your configuration:
+env:
+  # AZURE_FUNCTIONAPP_NAME: 'vsad-p-billing-alfa'   # set this to your function app name on Azure
+  AZURE_FUNCTIONAPP_NAME: "${{vars.FUNCTION_APP_NAME}}"   # set this to your function app name on Azure
+  AZURE_APPCONFIG_NAME: "${{vars.APP_CONFIG_NAME}}"
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'       # set this to the path to your function app project, defaults to the repository root
+  # PYTHON_VERSION: '3.11'                     # set this to the python version to use (e.g. '3.6', '3.7', '3.8')
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: prd
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v4
+
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        oidc: true
+
+    - name: import app config
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az appconfig kv import --name ${{ env.AZURE_APPCONFIG_NAME }} --auth-mode login -s file --path ./ac/ac_import.json --format json --yes
