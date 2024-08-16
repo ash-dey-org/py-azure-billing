@@ -6,6 +6,7 @@ on:
       - main
     paths-ignore:
       - ac/**
+      - .github/workflows/prd-app-config.yaml
   # workflow_dispatch:
 
 permissions:

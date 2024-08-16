@@ -1,7 +1,7 @@
 {
     "BillingApp:api_version": {
-        "dev" : "api-version=2023-09-01",
-        "uat" : "api-version=2023-10-01",
-        "prd" : "api-version=2023-11-01"
+        "d" : "api-version=2023-09-01",
+        "u" : "api-version=2023-10-01",
+        "p" : "api-version=2023-11-01"
   }
 }
