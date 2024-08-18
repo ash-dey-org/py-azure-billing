@@ -43,7 +43,7 @@ vendor_subscriptions = [item.strip().strip('"') for item in vendor_subscriptions
 '''
 
 app_config_endpoint = os.environ["billing_app_config"]
-env = os.environ["env"]
+env = os.environ["environment"]
 
 # Generate access token
 scope = "https://management.azure.com/.default"
