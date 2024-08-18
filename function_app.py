@@ -15,12 +15,10 @@
 
 import requests
 import csv
-# from datetime import datetime, timedelta
 import datetime
 import calendar
 import os
 import base64
-# from azure.identity import ClientSecretCredential
 from azure.identity import DefaultAzureCredential
 from azure.identity import CertificateCredential
 from azure.mgmt.resource.subscriptions import SubscriptionClient
@@ -30,7 +28,10 @@ from azure.keyvault.certificates import CertificateClient
 from azure.keyvault.secrets import SecretClient
 import azure.functions as func
 import logging
+from azure.appconfiguration.provider import load, AzureAppConfigurationKeyVaultOptions
+import json
 
+'''
 ## import Variables
 kv_url = os.environ["kv_url"]
 cert_name = os.environ["cert_name"]
@@ -39,12 +40,32 @@ tenant_id = os.environ["azure_tenant_id"]
 api_version = os.environ.get('api_version')
 vendor_subscriptions_env = os.environ.get("vendor_subscriptions")
 vendor_subscriptions = [item.strip().strip('"') for item in vendor_subscriptions_env.split(',')]
+'''
+
+app_config_endpoint = os.environ["billing_app_config"]
+env = os.environ["environment"]
 
 # Generate access token
 scope = "https://management.azure.com/.default"
 
 # Securely retrieve secrets from Azure Key Vault
 credential = DefaultAzureCredential()
+
+
+key_vault_options = AzureAppConfigurationKeyVaultOptions(credential=credential)
+config = load(endpoint=app_config_endpoint, credential=credential, key_vault_options=key_vault_options)
+
+kv_url = config["BillingApp:kv_url"]
+cert_name = config["BillingApp:cert_name"]
+client_id = config["BillingApp:billing_app_id"]
+tenant_id = config["BillingApp:azure_tenant_id"]
+api_version_all = config["BillingApp:api_version"]
+parsed_data = json.loads(api_version_all)
+api_version = parsed_data[env]
+vendor_subscriptions_env = config["BillingApp:vendor_subscriptions"]
+vendor_subscriptions = [item.strip().strip('"') for item in vendor_subscriptions_env.split(',')]
+
+
 certificate_client = CertificateClient(vault_url=kv_url, credential=credential)
 certificate = certificate_client.get_certificate(certificate_name=cert_name)
 cert_thumbprint = certificate.properties.x509_thumbprint.hex()
@@ -147,7 +168,7 @@ app = func.FunctionApp()
 @app.function_name(name="MonthlyBillingReport")
 @app.schedule(schedule="0 45 19 3 * *",
               arg_name="MonthlyBillingReport",
-              run_on_startup=False)
+              run_on_startup=True)
 def main(MonthlyBillingReport: func.TimerRequest) -> None:
     utc_timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if MonthlyBillingReport.past_due:
@@ -254,7 +275,7 @@ def process_file(input_file, output_file):
 
 def sendEmail(attachment_csv, attachment_xlsx):
 
-    connection_string = os.environ.get('comm_service_conn_string')
+    connection_string = config["BillingApp:comm_service_conn_string"]
 
     with open(attachment_csv, "rb") as file:
         file_bytes_b64_csv = base64.b64encode(file.read())
