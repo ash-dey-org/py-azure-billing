@@ -40,7 +40,7 @@ jobs:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        oidc: true
+        # oidc: true # not needed for oidc to work
 
     - name: import app config
       uses: azure/cli@v2
