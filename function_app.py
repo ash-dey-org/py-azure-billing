@@ -1,5 +1,5 @@
 # to do
-# include Ashv and Prem in email DL
+# chnage email to DL
 
 # pip install requests
 # pip install azure-identity
@@ -31,16 +31,6 @@ import logging
 from azure.appconfiguration.provider import load, AzureAppConfigurationKeyVaultOptions
 import json
 
-'''
-## import Variables
-kv_url = os.environ["kv_url"]
-cert_name = os.environ["cert_name"]
-client_id = os.environ["billing_app_id"]
-tenant_id = os.environ["azure_tenant_id"]
-api_version = os.environ.get('api_version')
-vendor_subscriptions_env = os.environ.get("vendor_subscriptions")
-vendor_subscriptions = [item.strip().strip('"') for item in vendor_subscriptions_env.split(',')]
-'''
 
 app_config_endpoint = os.environ["billing_app_config"]
 env = os.environ["environment"]
@@ -166,6 +156,7 @@ query = {
 app = func.FunctionApp()
 
 @app.function_name(name="MonthlyBillingReport")
+# schedule="0 45 19 3 * *" or schedule="0 45 19 3 1 2" to run once in every few years
 @app.schedule(schedule="0 45 19 3 * *",
               arg_name="MonthlyBillingReport",
               run_on_startup=True)
@@ -295,8 +286,8 @@ def sendEmail(attachment_csv, attachment_xlsx):
         "recipients": {
             "to": [
                 {
-                    "address": "ash.dey@standards.org.au",
-                    "displayName": "Ash Dey"
+                    "address": "azure.billing@standards.org.au",
+                    "displayName": "Azure Billing"
                 }
             ]
         },
