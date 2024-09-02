@@ -117,6 +117,9 @@ from_datetime = f"{from_date}T00:00:00Z"
 to_datetime = f"{to_date}T23:59:59Z"
 
 bill_month = from_date_input[-7:]
+# conver month from 07-2024 to Jul-2024
+bill_month_literal = datetime.datetime.strptime(bill_month, "%m-%Y").strftime("%b-%Y")
+
 csv_file_name = f"/tmp/azure-bill-{bill_month}.csv"
 xlsx_file_name = f"/tmp/azure-bill-{bill_month}.xlsx"
 
@@ -279,7 +282,7 @@ def sendEmail(attachment_csv, attachment_xlsx):
 
     message = {
         "content": {
-            "subject": "Azure Monthly Billing Report {bill_month}",
+            "subject": "Azure Monthly Billing Report " + bill_month_literal,
             "plainText": "Attched Azure monthly billing report. CSV file contains raw data, and does not include any third party management costs. Excel file consolidates data to show cost per app, includes approximate management costs charged by vendors. If the management cost is 0, its managed by SA."
 
         },
