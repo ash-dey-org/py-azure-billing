@@ -279,7 +279,7 @@ def sendEmail(attachment_csv, attachment_xlsx):
 
     message = {
         "content": {
-            "subject": "Azure Monthly Billing Report",
+            "subject": "Azure Monthly Billing Report {bill_month}",
             "plainText": "Attched Azure monthly billing report. CSV file contains raw data, and does not include any third party management costs. Excel file consolidates data to show cost per app, includes approximate management costs charged by vendors. If the management cost is 0, its managed by SA."
 
         },
