@@ -288,6 +288,10 @@ def sendEmail(attachment_csv, attachment_xlsx):
                 {
                     "address": "azure.billing@standards.org.au",
                     "displayName": "Azure Billing"
+                },
+                {
+                    "address": "ash.dey@standards.org.au",
+                    "displayName": "Ash Dey"
                 }
             ]
         },
