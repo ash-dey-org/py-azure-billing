@@ -34,7 +34,7 @@ jobs:
   - task: UsePythonVersion@0
     displayName: "Setting Python version to 3.11 as required by functions"
     inputs:
-      versionSpec: '3.11'
+      versionSpec: $(PythonVersion)
       architecture: 'x64'
 
   - bash: |
