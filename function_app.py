@@ -50,6 +50,7 @@ cert_name = config["BillingApp:cert_name"]
 client_id = config["BillingApp:billing_app_id"]
 tenant_id = config["BillingApp:azure_tenant_id"]
 api_version_all = config["BillingApp:api_version"]
+sumoUrl = os.environ.get('sumo_collector_url')
 parsed_data = json.loads(api_version_all)
 api_version = parsed_data[env]
 vendor_subscriptions_env = config["BillingApp:vendor_subscriptions"]
@@ -94,6 +95,7 @@ current_date = datetime.datetime.now()
 # Calculate the first and last day of the previous month
 first_day_previous_month = (current_date.replace(day=1) - datetime.timedelta(days=1)).replace(day=1)
 last_day_previous_month = first_day_previous_month.replace(day=calendar.monthrange(first_day_previous_month.year, first_day_previous_month.month)[1])
+last_day_previous_month_str = last_day_previous_month.strftime('%d-%m-%Y')
 
 # Format the dates as dd-mm-yyyy
 from_date_input = first_day_previous_month.strftime('%d-%m-%Y')
@@ -122,6 +124,7 @@ bill_month_literal = datetime.datetime.strptime(bill_month, "%m-%Y").strftime("%
 
 csv_file_name = f"/tmp/azure-bill-{bill_month}.csv"
 xlsx_file_name = f"/tmp/azure-bill-{bill_month}.xlsx"
+txt_file_name = f"/tmp/azure-bill-{bill_month}.txt"
 
 #Requst body
 query = {
@@ -171,6 +174,7 @@ def main(MonthlyBillingReport: func.TimerRequest) -> None:
     extract_billing_data(headers, query, api_version, csv_file_name)
     process_file(csv_file_name, xlsx_file_name)
     sendEmail(csv_file_name, xlsx_file_name)
+    uploadDataToSumologic(txt_file_name,sumoUrl)
 
 def extract_billing_data(headers, query, api_version, output_file_csv):
     # Initialize the Subscription client
@@ -201,6 +205,7 @@ def extract_billing_data(headers, query, api_version, output_file_csv):
             for row in data["properties"]["rows"]:
                 cost = float(format(row[0], '.2f'))
                 if cost > 0 :
+                    date = last_day_previous_month_str
                     resource_group_name = row[1]
                     subscription_name = row[2]
                     management_cost_appox = round(0.0, 2)
@@ -214,17 +219,28 @@ def extract_billing_data(headers, query, api_version, output_file_csv):
                         vendor = "Logicalis"
                     else:
                         vendor = "SA_Managed"
-                    output_data.append([app, environment, cost, management_cost_appox, total_cost, owner, resource_group_name, infrastructure, subscription_name, vendor])
+                    output_data.append([date, app, environment, cost, management_cost_appox, total_cost, owner, resource_group_name, infrastructure, subscription_name, vendor])
 
     # Write to CSV
     # output_file_csv = "output.csv"
     with open(output_file_csv, 'w', newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(["app", "environment", "cost_AUD", "management_cost_appox","total_cost", "owner", "resource_group_name", "infrastructure", "subscription_name", "vendor"])
+        csvwriter.writerow(["date", "app", "environment", "cost_AUD", "management_cost_appox","total_cost", "owner", "resource_group_name", "infrastructure", "subscription_name", "vendor"])
         csvwriter.writerows(output_data)
 
     print ("Output data written to file.... ", output_file_csv)
 
+    # Write to txt
+    output_file_txt = output_file_csv.replace(".csv", ".txt")
+    # Open the file with UTF-8 encoding
+    with open(output_file_txt, 'w', encoding='utf-8') as txtfile:
+        # Write the header row
+        txtfile.write("date\tapp\tenvironment\tcost_AUD\tmanagement_cost_appox\ttotal_cost\towner\tresource_group_name\tinfrastructure\tsubscription_name\tvendor\n")
+        # Write each row of data
+        for row in output_data:
+            txtfile.write("\t".join(map(str, row)) + "\n")
+
+    print("Output data written to file.... ", output_file_txt)
 
 def process_file(input_file, output_file):
 
@@ -344,6 +360,17 @@ def sendEmail(attachment_csv, attachment_xlsx):
 
     except Exception as ex:
         print(ex)
+
+def uploadDataToSumologic(file_path_txt:str,sumourl:str):
+    # upload logs to Sumologic
+    print("uploading data to sumologic......")
+    cmd = 'curl -v -X POST -H "X-Sumo-Category:security/defender/hunting" -H "X-Sumo-Name:%s" -T %s %s --ssl-no-revoke' %(file_path_txt, file_path_txt, sumourl)
+    # print(cmd)
+    returned_value = os.system(cmd)
+    # print('returned value:', returned_value)
+    print("Done.... Check Somologic portal for uploaded data.")
+
+
 
 '''
 # use this part when running locally & comment function app components at the top
