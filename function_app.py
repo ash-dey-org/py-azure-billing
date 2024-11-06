@@ -50,7 +50,10 @@ cert_name = config["BillingApp:cert_name"]
 client_id = config["BillingApp:billing_app_id"]
 tenant_id = config["BillingApp:azure_tenant_id"]
 api_version_all = config["BillingApp:api_version"]
-sumoUrl = os.environ.get('sumo_collector_url')
+sumoUrlCsv = os.environ.get('sumo_collector_url_csv')
+sumoUrlXlsx = os.environ.get('sumo_collector_url_xlsx')
+sumoCategoryCsv = "billing/azure/raw"
+sumoCategoryXlsx = "billing/azure/processed"
 parsed_data = json.loads(api_version_all)
 api_version = parsed_data[env]
 vendor_subscriptions_env = config["BillingApp:vendor_subscriptions"]
@@ -124,7 +127,8 @@ bill_month_literal = datetime.datetime.strptime(bill_month, "%m-%Y").strftime("%
 
 csv_file_name = f"/tmp/azure-bill-{bill_month}.csv"
 xlsx_file_name = f"/tmp/azure-bill-{bill_month}.xlsx"
-txt_file_name = f"/tmp/azure-bill-{bill_month}.txt"
+json_csv_file_name = f"/tmp/azure-bill-{bill_month}.csv.json"
+json_xlsx_file_name = f"/tmp/azure-bill-{bill_month}.xlsx.json"
 
 #Requst body
 query = {
@@ -174,7 +178,30 @@ def main(MonthlyBillingReport: func.TimerRequest) -> None:
     extract_billing_data(headers, query, api_version, csv_file_name)
     process_file(csv_file_name, xlsx_file_name)
     sendEmail(csv_file_name, xlsx_file_name)
-    uploadDataToSumologic(txt_file_name,sumoUrl)
+    uploadDataToSumologic(json_csv_file_name,sumoUrlCsv, sumoCategoryCsv)
+    uploadDataToSumologic(json_xlsx_file_name,sumoUrlXlsx, sumoCategoryXlsx)
+
+# write csv file to json file
+def csv_to_json(csv_file_path, json_file_path):
+    # Load the CSV file
+    csv_data = pd.read_csv(csv_file_path)
+
+    # Convert to JSON and write to file
+    with open(json_file_path, 'w') as json_file:
+        json.dump(json.loads(csv_data.to_json(orient="records")), json_file, indent=4)
+
+    print("Output data written to file.... ", json_file_path)
+
+# write xlsx file to json file
+def xlsx_to_json(xlsx_file_path, json_file_path):
+    # Load the Excel file
+    xlsx_data = pd.read_excel(xlsx_file_path)
+
+    # Convert to JSON and write to file
+    with open(json_file_path, 'w') as json_file:
+        json.dump(json.loads(xlsx_data.to_json(orient="records")), json_file, indent=4)
+
+    print("Output data written to file.... ", json_file_path)
 
 def extract_billing_data(headers, query, api_version, output_file_csv):
     # Initialize the Subscription client
@@ -230,17 +257,8 @@ def extract_billing_data(headers, query, api_version, output_file_csv):
 
     print ("Output data written to file.... ", output_file_csv)
 
-    # Write to txt
-    output_file_txt = output_file_csv.replace(".csv", ".txt")
-    # Open the file with UTF-8 encoding
-    with open(output_file_txt, 'w', encoding='utf-8') as txtfile:
-        # Write the header row
-        txtfile.write("date,app,environment,cost_AUD,management_cost_appox,total_cost,owner,resource_group_name,infrastructure,subscription_name,vendor\n")
-        # Write each row of data
-        for row in output_data:
-            txtfile.write(",".join(map(str, row)) + "\n")
-
-    print("Output data written to file.... ", output_file_txt)
+    # write csv file to json file
+    csv_to_json(output_file_csv, json_csv_file_name)
 
 def process_file(input_file, output_file):
 
@@ -281,6 +299,9 @@ def process_file(input_file, output_file):
     # Write the result to an Excel file
     print("Writing data to output file....", output_file)
     result.to_excel(output_file, index=False)
+
+    # write xlsx file to json file
+    xlsx_to_json(output_file, json_xlsx_file_name)
 
 
 def sendEmail(attachment_csv, attachment_xlsx):
@@ -361,14 +382,14 @@ def sendEmail(attachment_csv, attachment_xlsx):
     except Exception as ex:
         print(ex)
 
-def uploadDataToSumologic(file_path_txt:str,sumourl:str):
+def uploadDataToSumologic(file_path_txt:str,sumourl:str, category:str):
     # upload logs to Sumologic
     print("uploading data to sumologic......")
-    cmd = 'curl -v -X POST -H "X-Sumo-Category:security/defender/hunting" -H "X-Sumo-Name:%s" -T %s %s --ssl-no-revoke' %(file_path_txt, file_path_txt, sumourl)
+    cmd = 'curl -v -X POST -H "X-Sumo-Category:%s" -H "X-Sumo-Name:%s" -T %s %s --ssl-no-revoke' %(category, file_path_txt, file_path_txt, sumourl)
     # print(cmd)
     returned_value = os.system(cmd)
     # print('returned value:', returned_value)
-    print("Done.... Check Somologic portal for uploaded data.")
+    print("Done.... Check Somologic portal for uploaded data for file: ", file_path_txt)
 
 
 
