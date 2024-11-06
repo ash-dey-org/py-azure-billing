@@ -235,10 +235,10 @@ def extract_billing_data(headers, query, api_version, output_file_csv):
     # Open the file with UTF-8 encoding
     with open(output_file_txt, 'w', encoding='utf-8') as txtfile:
         # Write the header row
-        txtfile.write("date\tapp\tenvironment\tcost_AUD\tmanagement_cost_appox\ttotal_cost\towner\tresource_group_name\tinfrastructure\tsubscription_name\tvendor\n")
+        txtfile.write("date,app,environment,cost_AUD,management_cost_appox,total_cost,owner,resource_group_name,infrastructure,subscription_name,vendor\n")
         # Write each row of data
         for row in output_data:
-            txtfile.write("\t".join(map(str, row)) + "\n")
+            txtfile.write(",".join(map(str, row)) + "\n")
 
     print("Output data written to file.... ", output_file_txt)
 
