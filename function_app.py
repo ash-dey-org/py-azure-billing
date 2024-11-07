@@ -187,7 +187,7 @@ def csv_to_json(csv_file_path, json_file_path):
     csv_data = pd.read_csv(csv_file_path)
 
     # Convert to JSON and write to file
-    with open(json_file_path, 'w') as json_file:
+    with open(json_file_path, 'w', encoding="utf-8") as json_file:
         json.dump(json.loads(csv_data.to_json(orient="records")), json_file, indent=4)
 
     print("Output data written to file.... ", json_file_path)
@@ -198,7 +198,7 @@ def xlsx_to_json(xlsx_file_path, json_file_path):
     xlsx_data = pd.read_excel(xlsx_file_path)
 
     # Convert to JSON and write to file
-    with open(json_file_path, 'w') as json_file:
+    with open(json_file_path, 'w', encoding="utf-8") as json_file:
         json.dump(json.loads(xlsx_data.to_json(orient="records")), json_file, indent=4)
 
     print("Output data written to file.... ", json_file_path)
