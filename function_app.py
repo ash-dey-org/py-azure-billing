@@ -52,8 +52,8 @@ tenant_id = config["BillingApp:azure_tenant_id"]
 api_version_all = config["BillingApp:api_version"]
 sumoUrlCsv = os.environ.get('sumo_collector_url_csv')
 sumoUrlXlsx = os.environ.get('sumo_collector_url_xlsx')
-sumoCategoryCsv = "billing/azure/raw"
-sumoCategoryXlsx = "billing/azure/processed"
+sumoCategoryCsv = os.environ.get('sumo_category_csv')
+sumoCategoryXlsx = os.environ.get('sumo_category_xlsx')
 parsed_data = json.loads(api_version_all)
 api_version = parsed_data[env]
 vendor_subscriptions_env = config["BillingApp:vendor_subscriptions"]
@@ -169,7 +169,7 @@ app = func.FunctionApp()
 # schedule="0 45 19 3 * *" or schedule="0 45 19 3 1 2" to run once in every few years
 @app.schedule(schedule="0 45 19 3 * *",
               arg_name="MonthlyBillingReport",
-              run_on_startup=True)
+              run_on_startup=False)
 def main(MonthlyBillingReport: func.TimerRequest) -> None:
     utc_timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if MonthlyBillingReport.past_due:
@@ -295,7 +295,7 @@ def process_file(input_file, output_file):
     }).reset_index()
 
     # Select the desired columns
-    result = result[['app', 'azure_cost', 'management_cost_appox', 'total_cost']]
+    result = result[['date', 'app', 'azure_cost', 'management_cost_appox', 'total_cost']]
 
     # Write the result to an Excel file
     print("Writing data to output file....", output_file)
