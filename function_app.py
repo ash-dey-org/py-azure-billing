@@ -290,7 +290,8 @@ def process_file(input_file, output_file):
     result = df.groupby('app').agg({
         'azure_cost': 'sum',
         'management_cost_appox': 'sum',
-        'total_cost': 'sum'
+        'total_cost': 'sum',
+        'date': 'first'
     }).reset_index()
 
     # Select the desired columns
