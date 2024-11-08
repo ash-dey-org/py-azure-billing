@@ -295,6 +295,11 @@ def process_file(input_file, output_file):
     # Rename the 'cost_AUD' column to 'Azure_cost'
     df.rename(columns={'cost_AUD': 'azure_cost'}, inplace=True)
 
+    # Round specific columns to 2 decimal places
+    df['azure_cost'] = df['azure_cost'].round(2)
+    df['management_cost_appox'] = df['management_cost_appox'].round(2)
+    df['total_cost'] = df['total_cost'].round(2)
+
     # update csv file
     df.to_csv(input_file, index=False)
 
