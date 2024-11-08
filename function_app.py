@@ -285,13 +285,15 @@ def process_file(input_file, output_file):
     # Calculate the 'total_cost' column
     df['total_cost'] = df['cost_AUD'] + df['management_cost_appox']
 
+    # Replace any NaN values with "unknown"
+    df.fillna('unknown', inplace=True)
+
     # Replace blank app values with "unknown"
-    df['app'] = df['app'].fillna('unknown')
-    df['app'] = df['app'].replace('', 'unknown')
+    # df['app'] = df['app'].fillna('unknown')
+    # df['app'] = df['app'].replace('', 'unknown')
 
     # Rename the 'cost_AUD' column to 'Azure_cost'
     df.rename(columns={'cost_AUD': 'azure_cost'}, inplace=True)
-    df.to_csv(input_file, index=False)
 
     # Group by 'app' and sum the required columns
     result = df.groupby('app').agg({
