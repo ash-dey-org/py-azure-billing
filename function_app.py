@@ -263,8 +263,6 @@ def extract_billing_data(headers, query, api_version, output_file_csv):
 
     print ("Output data written to file.... ", output_file_csv)
 
-    # write csv file to json file
-    csv_to_json(output_file_csv, json_csv_file_name)
 
 def process_file(input_file, output_file):
 
@@ -318,6 +316,8 @@ def process_file(input_file, output_file):
     print("Writing data to output file....", output_file)
     result.to_excel(output_file, index=False)
 
+    # write csv file to json file
+    csv_to_json(input_file, json_csv_file_name)
     # write xlsx file to json file
     xlsx_to_json(output_file, json_xlsx_file_name)
 
