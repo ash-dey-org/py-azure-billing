@@ -169,7 +169,7 @@ app = func.FunctionApp()
 # schedule="0 45 19 3 * *" or schedule="0 45 19 3 1 2" to run once in every few years
 @app.schedule(schedule="0 45 19 3 * *",
               arg_name="MonthlyBillingReport",
-              run_on_startup=False)
+              run_on_startup=True)
 def main(MonthlyBillingReport: func.TimerRequest) -> None:
     utc_timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if MonthlyBillingReport.past_due:
@@ -186,9 +186,12 @@ def csv_to_json(csv_file_path, json_file_path):
     # Load the CSV file
     csv_data = pd.read_csv(csv_file_path)
 
-    # Convert to JSON and write to file
-    with open(json_file_path, 'w', encoding="utf-8") as json_file:
-        json.dump(json.loads(csv_data.to_json(orient="records")), json_file, indent=4)
+     # Open the output file in write mode
+    with open(json_file_path, 'w') as json_file:
+        # Iterate through each row in the DataFrame and write it as a JSON object
+        for _, row in csv_data.iterrows():
+            json.dump(row.to_dict(), json_file)
+            json_file.write('\n')
 
     print("Output data written to file.... ", json_file_path)
 
@@ -197,9 +200,12 @@ def xlsx_to_json(xlsx_file_path, json_file_path):
     # Load the Excel file
     xlsx_data = pd.read_excel(xlsx_file_path)
 
-    # Convert to JSON and write to file
-    with open(json_file_path, 'w', encoding="utf-8") as json_file:
-        json.dump(json.loads(xlsx_data.to_json(orient="records")), json_file, indent=4)
+     # Open the output file in write mode
+    with open(json_file_path, 'w') as json_file:
+        # Iterate through each row in the DataFrame and write it as a JSON object
+        for _, row in xlsx_data.iterrows():
+            json.dump(row.to_dict(), json_file)
+            json_file.write('\n')
 
     print("Output data written to file.... ", json_file_path)
 
@@ -285,6 +291,7 @@ def process_file(input_file, output_file):
 
     # Rename the 'cost_AUD' column to 'Azure_cost'
     df.rename(columns={'cost_AUD': 'azure_cost'}, inplace=True)
+    df.to_csv(input_file, index=False)
 
     # Group by 'app' and sum the required columns
     result = df.groupby('app').agg({
