@@ -295,6 +295,9 @@ def process_file(input_file, output_file):
     # Rename the 'cost_AUD' column to 'Azure_cost'
     df.rename(columns={'cost_AUD': 'azure_cost'}, inplace=True)
 
+    # update csv file
+    df.to_csv(input_file, index=False)
+
     # Group by 'app' and sum the required columns
     result = df.groupby('app').agg({
         'azure_cost': 'sum',
