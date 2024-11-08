@@ -94,7 +94,8 @@ print("This program is going to extract previous month's billing data per RG fro
 ## Set date to previous month
 
 # Get the current date
-current_date = datetime.datetime.now()
+# current_date = datetime.datetime.now()
+current_date = datetime.datetime(2024, 8, 8)
 # Calculate the first and last day of the previous month
 first_day_previous_month = (current_date.replace(day=1) - datetime.timedelta(days=1)).replace(day=1)
 last_day_previous_month = first_day_previous_month.replace(day=calendar.monthrange(first_day_previous_month.year, first_day_previous_month.month)[1])
