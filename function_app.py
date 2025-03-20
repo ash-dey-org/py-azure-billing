@@ -350,7 +350,7 @@ def sendEmail(attachment_csv, attachment_xlsx):
                 }
             ]
         },
-        "senderAddress": "DoNotReply@d737b976-8c58-45e0-a0e7-4c16f5c097c4.azurecomm.net",
+        "senderAddress": "DoNotReply@7d77caed-778d-41ad-b4e7-170e83659f5d.azurecomm.net",
         "replyTo": [
             {
                 "address": "ash.dey@standards.org.au",  # Email address. Required.
