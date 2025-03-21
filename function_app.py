@@ -179,8 +179,8 @@ def main(MonthlyBillingReport: func.TimerRequest) -> None:
     extract_billing_data(headers, query, api_version, csv_file_name)
     process_file(csv_file_name, xlsx_file_name)
     sendEmail(csv_file_name, xlsx_file_name)
-    uploadDataToSumologic(json_csv_file_name,sumoUrlCsv, sumoCategoryCsv)
-    uploadDataToSumologic(json_xlsx_file_name,sumoUrlXlsx, sumoCategoryXlsx)
+    # uploadDataToSumologic(json_csv_file_name,sumoUrlCsv, sumoCategoryCsv)
+    # uploadDataToSumologic(json_xlsx_file_name,sumoUrlXlsx, sumoCategoryXlsx)
 
 # write csv file to json file
 def csv_to_json(csv_file_path, json_file_path):
